@@ -71,22 +71,41 @@ if settings.APP_ENV == "production":
         raise ValueError("[SECURITY_ERROR] In production mode (APP_ENV=production), JWT_SECRET must be set via environment variables and cannot use default development key.")
 
 # Resolve absolute storage path
+# Resolve storage paths
+#
+# Production on Vercel must not depend on the deployment filesystem.
+# Uploaded documents should use Vercel Blob and vector data should use
+# PostgreSQL/in-memory FAISS reconstruction.
+#
+# Local development can continue using the local storage directory.
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-STORAGE_PATH = Path(settings.STORAGE_DIR)
+if settings.STORAGE_BACKEND == "local":
+    STORAGE_PATH = Path(settings.STORAGE_DIR)
 
-if not STORAGE_PATH.is_absolute():
-    STORAGE_PATH = (BASE_DIR / STORAGE_PATH).resolve()
+    if not STORAGE_PATH.is_absolute():
+        STORAGE_PATH = (BASE_DIR / STORAGE_PATH).resolve()
 
-DOCUMENTS_STORAGE_DIR = STORAGE_PATH / "documents"
-VECTORSTORES_STORAGE_DIR = STORAGE_PATH / "vectorstores"
+    DOCUMENTS_STORAGE_DIR = STORAGE_PATH / "documents"
+    VECTORSTORES_STORAGE_DIR = STORAGE_PATH / "vectorstores"
 
-DOCUMENTS_STORAGE_DIR.mkdir(
-    parents=True,
-    exist_ok=True
-)
+    DOCUMENTS_STORAGE_DIR.mkdir(
+        parents=True,
+        exist_ok=True
+    )
 
-VECTORSTORES_STORAGE_DIR.mkdir(
-    parents=True,
-    exist_ok=True
-)
+    VECTORSTORES_STORAGE_DIR.mkdir(
+        parents=True,
+        exist_ok=True
+    )
+
+else:
+    # Vercel / object-storage deployments must not write to the
+    # read-only deployment filesystem.
+    #
+    # Keep these paths available for compatibility with code that imports
+    # them, but do not create directories here.
+    STORAGE_PATH = Path("/tmp/documind-storage")
+    DOCUMENTS_STORAGE_DIR = STORAGE_PATH / "documents"
+    VECTORSTORES_STORAGE_DIR = STORAGE_PATH / "vectorstores"
