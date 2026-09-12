@@ -2,18 +2,21 @@
 # DOCUMIND AI - GITIGNORE
 # ==========================================
 
-# ---------- Environment & Secrets ----------
+# -------------------------
+# Environment & Secrets
+# -------------------------
 .env
 .env.*
 !.env.example
 
-# ---------- Python ----------
+# -------------------------
+# Python
+# -------------------------
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 
-# Virtual environments
 venv/
 .venv/
 env/
@@ -21,14 +24,16 @@ ENV/
 env.bak/
 venv.bak/
 
-# Python packaging
 *.egg
 *.egg-info/
-dist/
-build/
-.eggs/
 
-# ---------- Testing / Coverage ----------
+# Python build
+build/
+dist/
+
+# -------------------------
+# Testing / Coverage
+# -------------------------
 .pytest_cache/
 .coverage
 .coverage.*
@@ -38,70 +43,91 @@ htmlcov/
 .mypy_cache/
 .ruff_cache/
 
-# ---------- Node / React ----------
+# -------------------------
+# Node / React
+# -------------------------
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Vite / React build output
 frontend/dist/
 frontend/.vite/
-dist/
 
-# ---------- Local Database ----------
+# -------------------------
+# Local Databases
+# -------------------------
 *.db
 *.sqlite
 *.sqlite3
 
-# ---------- Local Document Storage ----------
-storage/
+# -------------------------
+# Local Document Storage
+# IMPORTANT:
+# Do NOT use "documents/" here.
+# It would ignore frontend/src/components/documents/
+# -------------------------
 backend/storage/
+backend/uploads/
+backend/vectorstores/
 
-# Uploaded/generated files
-uploads/
-documents/
-vectorstores/
-faiss.index
+# Local PDF test files
+backend/*.pdf
+
+# -------------------------
+# FAISS
+# -------------------------
 *.faiss
+*.index
 
-# ---------- IDE ----------
+# -------------------------
+# IDE
+# -------------------------
 .vscode/
 .idea/
 *.iml
 
-# ---------- OS ----------
+# -------------------------
+# OS
+# -------------------------
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# ---------- Logs ----------
+# -------------------------
+# Logs
+# -------------------------
 *.log
 logs/
 
-# ---------- Temporary Files ----------
+# -------------------------
+# Temporary files
+# -------------------------
 *.tmp
 *.temp
 *.bak
 *.swp
 *.swo
 
-# ---------- Jupyter ----------
+# -------------------------
+# Jupyter
+# -------------------------
 .ipynb_checkpoints/
 
-# ---------- Secrets / Certificates ----------
+# -------------------------
+# Secrets / Certificates
+# -------------------------
 *.pem
 *.key
 *.crt
 
-# ---------- Vercel ----------
+# -------------------------
+# Vercel
+# -------------------------
 .vercel/
 
-# ---------- Local cache ----------
+# -------------------------
+# Local cache
+# -------------------------
 .cache/
-.pytest_cache/
-# Test/sample PDFs
-backend/test_sample.pdf
-backend/Farner Scholarship Circular.pdf
-backend/mcq-on-coding-and-decoding.pdf
