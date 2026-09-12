@@ -1,0 +1,107 @@
+# ==========================================
+# DOCUMIND AI - GITIGNORE
+# ==========================================
+
+# ---------- Environment & Secrets ----------
+.env
+.env.*
+!.env.example
+
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Python packaging
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ---------- Testing / Coverage ----------
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.mypy_cache/
+.ruff_cache/
+
+# ---------- Node / React ----------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Vite / React build output
+frontend/dist/
+frontend/.vite/
+dist/
+
+# ---------- Local Database ----------
+*.db
+*.sqlite
+*.sqlite3
+
+# ---------- Local Document Storage ----------
+storage/
+backend/storage/
+
+# Uploaded/generated files
+uploads/
+documents/
+vectorstores/
+faiss.index
+*.faiss
+
+# ---------- IDE ----------
+.vscode/
+.idea/
+*.iml
+
+# ---------- OS ----------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------- Logs ----------
+*.log
+logs/
+
+# ---------- Temporary Files ----------
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+
+# ---------- Jupyter ----------
+.ipynb_checkpoints/
+
+# ---------- Secrets / Certificates ----------
+*.pem
+*.key
+*.crt
+
+# ---------- Vercel ----------
+.vercel/
+
+# ---------- Local cache ----------
+.cache/
+.pytest_cache/
+# Test/sample PDFs
+backend/test_sample.pdf
+backend/Farner Scholarship Circular.pdf
+backend/mcq-on-coding-and-decoding.pdf
