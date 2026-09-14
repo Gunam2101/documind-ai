@@ -110,7 +110,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitl
           </div>
 
           {/* Form Content */}
-          <div className="p-6 rounded-3xl bg-[#161c30] border border-[#212b45] shadow-xl">
+          <div className="p-6 rounded-3xl bg-[#161c30] border border-[#212b45] shadow-xl space-y-4">
             {children}
           </div>
         </div>

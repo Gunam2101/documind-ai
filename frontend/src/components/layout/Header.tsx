@@ -5,8 +5,8 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 
 export const Header: React.FC = () => {
-  const { user, logout } = useAuth();
-  const { theme, setTheme, isDark } = useTheme();
+  const { user, isDemoMode, logout } = useAuth();
+  const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [showNotifications, setShowNotifications] = useState(false);
@@ -43,6 +43,12 @@ export const Header: React.FC = () => {
 
       {/* Right Controls */}
       <div className="flex items-center gap-2 sm:gap-3">
+        {isDemoMode && (
+          <div className="px-3 py-1 rounded-full bg-purple-950/60 border border-purple-500/40 text-purple-300 text-xs font-bold flex items-center gap-1.5 shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
+            <span>Demo Mode Active</span>
+          </div>
+        )}
         {/* Theme Toggle */}
         <button
           onClick={cycleTheme}

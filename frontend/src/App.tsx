@@ -30,7 +30,7 @@ import { Loader2 } from 'lucide-react';
 const queryClient = new QueryClient();
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isDemoMode, isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -40,7 +40,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !isDemoMode) {
     return <Navigate to="/login" replace />;
   }
 
@@ -48,7 +48,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 };
 
 const PublicOnlyRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isDemoMode, isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -58,7 +58,7 @@ const PublicOnlyRoute: React.FC<{ children: React.ReactNode }> = ({ children }) 
     );
   }
 
-  if (isAuthenticated) {
+  if (isAuthenticated || isDemoMode) {
     return <Navigate to="/dashboard" replace />;
   }
 

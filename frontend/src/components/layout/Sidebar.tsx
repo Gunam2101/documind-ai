@@ -106,8 +106,8 @@ export const Sidebar: React.FC = () => {
               </div>
               <div className="truncate">
                 <p className="text-xs font-bold text-white truncate">{user.name}</p>
-                <span className="inline-block px-1.5 py-0.5 rounded bg-indigo-950/60 text-indigo-300 text-[9px] font-bold border border-indigo-500/30">
-                  Free Plan
+                <span className="inline-block px-1.5 py-0.5 rounded bg-purple-950/60 text-purple-300 text-[9px] font-bold border border-purple-500/30">
+                  {user.is_demo ? 'Demo Mode' : 'Free Plan'}
                 </span>
               </div>
             </div>

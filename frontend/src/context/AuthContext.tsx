@@ -1,10 +1,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '../types';
 import { authApi } from '../services/authApi';
+import { api } from '../services/api';
+import { DEMO_USER } from '../services/demoData';
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
+  isDemoMode: boolean;
+  isBackendOnline: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   loginAsDemo: () => Promise<void>;
@@ -17,22 +21,54 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [isDemoMode, setIsDemoMode] = useState<boolean>(
+    () => localStorage.getItem('documind_demo_mode') === 'true'
+  );
+  const [isBackendOnline, setIsBackendOnline] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  // Background non-blocking health check
+  const checkBackendHealth = async () => {
+    try {
+      await api.get('/health', { timeout: 3000 });
+      setIsBackendOnline(true);
+    } catch (_) {
+      setIsBackendOnline(false);
+    }
+  };
+
   const refreshUser = async () => {
+    // 1. Check Demo Mode Flag
+    const isDemo = localStorage.getItem('documind_demo_mode') === 'true';
+    if (isDemo) {
+      setUser(DEMO_USER);
+      setIsDemoMode(true);
+      setIsLoading(false);
+      checkBackendHealth();
+      return;
+    }
+
+    // 2. Check JWT Token for Real Auth
     const token = localStorage.getItem('access_token');
     if (!token) {
       setUser(null);
+      setIsDemoMode(false);
       setIsLoading(false);
+      checkBackendHealth();
       return;
     }
+
     try {
       const u = await authApi.getMe();
       setUser(u);
+      setIsDemoMode(false);
+      setIsBackendOnline(true);
     } catch (e) {
       setUser(null);
+      setIsDemoMode(false);
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
+      checkBackendHealth();
     } finally {
       setIsLoading(false);
     }
@@ -46,9 +82,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     try {
       const res = await authApi.login({ email, password });
+      localStorage.removeItem('documind_demo_mode');
       localStorage.setItem('access_token', res.access_token);
       localStorage.setItem('refresh_token', res.refresh_token);
       setUser(res.user);
+      setIsDemoMode(false);
     } finally {
       setIsLoading(false);
     }
@@ -58,9 +96,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     try {
       const res = await authApi.register({ name, email, password });
+      localStorage.removeItem('documind_demo_mode');
       localStorage.setItem('access_token', res.access_token);
       localStorage.setItem('refresh_token', res.refresh_token);
       setUser(res.user);
+      setIsDemoMode(false);
     } finally {
       setIsLoading(false);
     }
@@ -69,11 +109,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     setIsLoading(true);
     try {
-      await authApi.logout();
+      if (!isDemoMode) {
+        await authApi.logout();
+      }
     } catch (e) {
-      console.error(e);
+      console.error('Logout request error:', e);
     } finally {
+      localStorage.removeItem('documind_demo_mode');
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
       setUser(null);
+      setIsDemoMode(false);
       setIsLoading(false);
     }
   };
@@ -81,21 +127,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const loginAsDemo = async () => {
     setIsLoading(true);
     try {
-      const demoEmail = 'demo@documind.ai';
-      const demoPassword = 'DemoUser123!';
-      try {
-        const res = await authApi.login({ email: demoEmail, password: demoPassword });
-        localStorage.setItem('access_token', res.access_token);
-        localStorage.setItem('refresh_token', res.refresh_token);
-        setUser(res.user);
-      } catch (e) {
-        const res = await authApi.register({ name: 'Demo Student', email: demoEmail, password: demoPassword });
-        localStorage.setItem('access_token', res.access_token);
-        localStorage.setItem('refresh_token', res.refresh_token);
-        setUser(res.user);
-      }
-    } catch (e) {
-      console.error(e);
+      // Pure local demo session initialization - ZERO backend network calls
+      localStorage.setItem('documind_demo_mode', 'true');
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      setUser(DEMO_USER);
+      setIsDemoMode(true);
     } finally {
       setIsLoading(false);
     }
@@ -106,6 +143,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         user,
         isAuthenticated: !!user,
+        isDemoMode,
+        isBackendOnline,
         isLoading,
         login,
         loginAsDemo,

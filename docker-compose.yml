@@ -29,7 +29,7 @@ services:
       - "8000:8000"
     environment:
       - APP_ENV=production
-      - DATABASE_URL=postgresql+psycopg2://documind_user:documind_password@postgres:5432/documind
+      - DATABASE_URL=postgresql+psycopg://documind_user:documind_password@postgres:5432/documind
       - JWT_SECRET=super_secret_jwt_key_documind_change_in_production_32bytes
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - OPENAI_CHAT_MODEL=gpt-4o-mini
