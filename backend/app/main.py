@@ -20,9 +20,12 @@ from app.routes import (
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Initialize DB tables automatically on startup in development mode only
+    # Automatically initialize DB schema in development mode only.
+    # Production serverless deployments (Vercel + Supabase) rely on database migrations
+    # or initial DB setup, avoiding DDL inspection overhead on serverless cold starts.
     if settings.APP_ENV == "development":
         try:
+            import app.models  # Register all SQLAlchemy models
             Base.metadata.create_all(bind=engine)
             print("[Database] Development schema initialized successfully.")
         except Exception as e:
@@ -39,7 +42,7 @@ app = FastAPI(
     openapi_url="/api/openapi.json"
 )
 
-# Explicit CORS configuration supporting comma-separated URLs in FRONTEND_URL
+# Explicit CORS configuration supporting comma-separated URLs in FRONTEND_URL and Vercel domains
 raw_origins = [url.strip() for url in settings.FRONTEND_URL.split(",") if url.strip()]
 default_dev_origins = [
     "http://localhost:5173",
@@ -52,6 +55,7 @@ origins = list(dict.fromkeys(raw_origins + default_dev_origins))
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

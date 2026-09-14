@@ -14,6 +14,7 @@ class UserResponse(UserBase):
     id: str
     is_verified: bool
     created_at: datetime
+    updated_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
@@ -30,9 +31,9 @@ class UserSettingsUpdate(BaseModel):
 
 class DashboardStats(BaseModel):
     total_documents: int
-    total_conversations: int
-    total_messages: int
-    storage_used_mb: float
+    total_pages: int
+    questions_asked: int
+    storage_used_bytes: int
 
 # --- Token Schemas ---
 class Token(BaseModel):
